@@ -4,25 +4,49 @@ push @{$c->{fields}->{eprint}},
 	name => 'video_remote_url',
     type => 'text',
     render_value => 'render_video_link',
+    # fields => [
+	# 	{
+    #         name => 'render_thumbnail',
+    #         type => 'text',
+    #         virtual => 1,
+    #     }
+    # ]
 };
+
+# $c->{render_video_remote_url_thumbnail} = sub{
+
+#     return "THUMBNAIL OF VIDEO HERE";
+# };
 
 # use strict;
 # use Data::Dumper;
 $c->{render_video_link} = sub{
 
-    my( $session, $field, $value) = @_;#, %opts
+    my( $session, $field, $value) = @_;#, %opts # , $unused0, $unused1, $eprint
     # user Data::Dumper;
     # print STDERR "opts: " . Dumper(\%opts) . "\n";
     my $element;
+    # if($field->get_property("render_custom") eq "small"){
+    #     $element = $session->make_element("div");
+    #     $element->appendChild( $session->make_text( "Thumnail of video" ) );
+    #     return $element;
+    # }
+
+    
+
+    # use Devel::StackTrace;
+    # my $trace = Devel::StackTrace->new;
+    # print STDERR "render_video_link stack trace: " . $trace->as_string . "\n"; 
+
 
     my $url = $value;
     if( $url =~ m{^(https?)://www\.youtube\.com/.*\bv=([^;&]+)} )
     {
 
         my $id = $2;
-        # if ($opts{"size"} eq "small"){
-        #     $element = $session->make_element("img", src => sprintf("$1://img.youtube.com/vi/%s/1.jpg", $2))
-        # }else{
+        if($field->get_property("render_custom") eq "small"){
+            $element = $session->make_element("img", src => sprintf("$1://img.youtube.com/vi/%s/1.jpg", $2))
+        }else{
 
             $element = $session->make_element( "iframe",
                         width => 420,
@@ -31,7 +55,7 @@ $c->{render_video_link} = sub{
                         frameborder => 0,
                         allowfullscreen => "yes"
                     );
-        # }
+        }
     }
     elsif( $url =~ m{^(https?)://vimeo.com/(\d+)} ) {
         $element = $session->make_element( "iframe",
