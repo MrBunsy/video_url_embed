@@ -42,20 +42,9 @@ sub action_add_format
 
 	
 	#plan is for a file that contains a list of urls, mime type "text/uri-list"
-	# $document->set_value("upload_url", $ffname);
 	my ($fh, $filepath) = File::Temp::tempfile();
-	my $filename = $filepath;
-	# print STDERR "temp filename: $filename\n";
-	#logic stolen from perl_lib/EPrints/Plugin/Screen/EPrint/Document/Files.pm line 166
-	if( $filename =~ /^[A-Z]:/i )
-	{
-		$filename =~ s/^.*\\//;
-	}
-	else
-	{
-		$filename =~ s/^.*\///;
-	}
-	$filename = EPrints->system->sanitise( "uri_list" );
+
+	my $filename = EPrints->system->sanitise( "link.uri" );
 
 	#actually write to the file!
 	print $fh $url;
@@ -69,14 +58,7 @@ sub action_add_format
 
 	my $doc = $eprint->create_subdataobj( "documents", $epdata);
 	$doc->set_format("other");
-	# if( !defined $document )
-	# {
-	# 	$processor->add_message( "error", $self->{session}->html_phrase( "Plugin/InputForm/Component/Upload:create_failed" ) );
-	# 	return;
-	# }
-
-	# #sub add_file my( $self, $filepath, $filename, $preserve_path )
-	# my $fileob = $doc->add_file( $filepath, $filename);
+	
 	# contents of add_file, but with mime_type set
 	my $fileobj;
 	{
@@ -98,54 +80,14 @@ sub action_add_format
 		close $fh;
 	}
 
-
-
 	if( !$fileobj )
 	{
 		$doc->remove();
 		$processor->add_message( "error", $self->{session}->html_phrase( "Plugin/InputForm/Component/Upload:upload_failed" ) );
 		return;
 	}
-
-	# $doc->set_value( "mime_type", "text/uri-list" );
-	# $doc->get_value("files")->[0]->set_value( "mime_type", "text/uri-list" );
-
-	# my $epdata = {};
-	# $epdata->{mime_type} = "text/uri-list";
-
-	# $epdata->{main} = $filename;
-	# $epdata->{files} = [{
-	# 	filename => $filename,
-	# 	filesize => (-s $fh),
-	# 	mime_type => $epdata->{mime_type},
-	# 	_content => $fh,
-	# }];
-
-	# $processor->{notes}->{epdata} = $epdata;
-
-	# my $list;
-	# my $doc = $eprint->create_subdataobj( "documents", $epdata );
-	# if( defined $doc )
-	# {
-	# 	$list = EPrints::List->new(
-	# 		session => $session,
-	# 		dataset => $doc->dataset,
-	# 		ids => [$doc->id]
-	# 	);
-	# 	$processor->{notes}->{upload_plugin}->{document} = $doc;
-	# }
-
-	# if( !defined $list || $list->count == 0 )
-	# {
-	# 	$processor->add_message( "error", $session->html_phrase( "Plugin/InputForm/Component/Upload:create_failed" ) );
-	# 	return;
-	# }
-
-	# for(@{$list->ids})
-	# {
-	# 	$processor->{notes}->{upload_plugin}->{to_unroll}->{$_} = 1;
-	# }
-
+	# let the indexer know this file needs looking at, otherwise thumbnails won't be generated
+	$doc->queue_files_modified;
 
 	$doc->commit;
 
