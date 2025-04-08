@@ -57,7 +57,7 @@ sub action_add_format
 	$epdata->{main} = $filename;
 
 	my $doc = $eprint->create_subdataobj( "documents", $epdata);
-	$doc->set_format("other");
+	$doc->set_format("video");
 	
 	# contents of add_file, but with mime_type set
 	my $fileobj;
