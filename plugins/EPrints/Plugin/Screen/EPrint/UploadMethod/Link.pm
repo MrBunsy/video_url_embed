@@ -99,12 +99,16 @@ sub render
 {
 	my( $self ) = @_;
 
-	my $f = $self->{session}->make_doc_fragment;
+	
+
+	my $fragment = $self->{session}->make_doc_fragment;
+
+	my $inner_fragment = $self->{session}->make_element( "div", class=>"ep_link_upload_grid");
 
 	my $ffname = join('_', $self->{prefix}, "url");
 	my $label = $self->{session}->make_element( "label", for => $ffname );
 	$label->appendChild( $self->{session}->html_phrase( "Plugin/InputForm/Component/Upload:new_from_link" ) );
-	$f->appendChild( $label );
+	$inner_fragment->appendChild( $label );
 
 	my $file_button = $self->{session}->make_element( "input",
 		name => $ffname,
@@ -115,11 +119,50 @@ sub render
 		value => $self->{session}->phrase( "Plugin/InputForm/Component/Upload:add_link" ), 
 		class => "ep_form_internal_button",
 		name => "_internal_".$self->{prefix}."_add_format" );
-	$f->appendChild( $file_button );
-	$f->appendChild( $self->{session}->make_text( " " ) );
-	$f->appendChild( $add_format_button );
+	$inner_fragment->appendChild( $file_button );
+	$inner_fragment->appendChild( $self->{session}->make_text( " " ) );
+	$inner_fragment->appendChild( $add_format_button );
+
+
+	#inspired by Repository::render_row_with_help
+	my $help_prefix = "link_upload_help";
+	my $inline_help_class = "ep_multi_inline_help ep_no_js";
+
+	# style=>"overflow: hidden; display: none; height: 0px;"
+	my $inline_help_div = $self->{session}->make_element( "div", id=>$help_prefix, class=>$inline_help_class);
+	my $inner_help_div = $self->{session}->make_element( "div", id=>$help_prefix."_inner");
 	
-	return $f; 
+	$inner_help_div->appendChild($self->{session}->make_text($self->{session}->phrase( "Plugin/Screen/EPrint/UploadMethod/Link:help")));
+	$inline_help_div->appendChild($inner_help_div);
+	
+
+	my $help_button_div = $self->{session}->make_element( "div", class=>"ep_multi_help ep_only_js_table_cell ep_toggle ep_table_cell", style=>"display:inline-block;" );
+	my $show_help = $self->{session}->make_element( "div", class=>"ep_sr_show_help ep_only_js", id=>$help_prefix."_show" );
+	my $helplink = $self->{session}->make_element( "a", onclick => "EPJS_blur(event); EPJS_toggleSlide('$help_prefix',false,'block');EPJS_toggle('${help_prefix}_hide',false,'block');EPJS_toggle('${help_prefix}_show',true,'block');return false", href=>"#" );
+	$helplink->appendChild( $self->{session}->make_element( "img", 
+		alt => $self->{session}->phrase( "lib/session:show_help_alt" ), 
+		title=> $self->{session}->phrase( "lib/session:show_help_title" ), 
+		src => $self->{session}->phrase( "lib/session:show_help_src" ) ) );
+	$show_help->appendChild( $helplink );
+	$help_button_div->appendChild( $show_help );
+
+	my $hide_help = $self->{session}->make_element( "div", class=>"ep_sr_hide_help ep_hide", id=>$help_prefix."_hide" );
+	my $helplink2 = $self->{session}->make_element( "a", onclick => "EPJS_blur(event); EPJS_toggleSlide('$help_prefix',false,'block');EPJS_toggle('${help_prefix}_hide',false,'block');EPJS_toggle('${help_prefix}_show',true,'block');return false", href=>"#" );
+        $helplink2->appendChild( $self->{session}->make_element( "img", 
+		alt => $self->{session}->phrase( "lib/session:hide_help_alt" ), 
+		title=> $self->{session}->phrase( "lib/session:hide_help_title" ), 
+		src => $self->{session}->phrase( "lib/session:hide_help_src" ) ) );
+	$hide_help->appendChild( $helplink2 );
+	$help_button_div->appendChild( $hide_help );
+	$inner_fragment->appendChild( $help_button_div );
+
+	# help text after button
+	$inner_fragment->appendChild($inline_help_div);
+
+
+	$fragment->appendChild($inner_fragment);
+	
+	return $fragment; 
 }
 
 1;

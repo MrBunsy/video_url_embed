@@ -5,5 +5,7 @@
 <epp:phrase id="Plugin/InputForm/Component/Upload:new_from_link">YouTube Video URL</epp:phrase>
 <epp:phrase id="Plugin/Screen/EPrint/UploadMethod/Link:title">Link to YouTube</epp:phrase>
 <epp:phrase id="Plugin/InputForm/Component/Upload:add_link">Add</epp:phrase>
+<epp:phrase id="Plugin/Screen/EPrint/UploadMethod/Link:help">URL of YouTube video without playlist. Example: https://www.youtube.com/watch?v=[id_of_video_here]</epp:phrase>
+
 
 </epp:phrases>
