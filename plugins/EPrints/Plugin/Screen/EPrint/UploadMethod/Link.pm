@@ -57,7 +57,9 @@ sub action_add_format
 	$epdata->{main} = $filename;
 
 	my $doc = $eprint->create_subdataobj( "documents", $epdata);
+	# TODO expand this for more types of link than just assuming youtube
 	$doc->set_format("video");
+	$doc->set_value("formatdesc", "YouTube Video");
 	
 	# contents of add_file, but with mime_type set
 	my $fileobj;
