@@ -40,6 +40,24 @@ sub action_add_format
 
 	my $url = Encode::decode_utf8( $session->param( $ffname ) );
 
+	my $valid_url = 0;
+	if( $url =~ m{^(https?)://www\.youtube\.com/.*\bv=([^;&]+)} )
+    {
+		#normal youtube link
+		$valid_url = 1;
+		# just keep the id and junk everything else
+		$url = "https://www.youtube.com/watch?v=$2";
+	}elsif( $url =~ m{^(https?)://www\.youtube\.com/shorts/([^;&]+)}){
+		#youtube short, convert to normal youtube video
+		$url = "https://www.youtube.com/watch?v=$2";
+		$valid_url = 1;
+	}
+
+	if( !$valid_url )
+	{
+		$processor->add_message( "error", $self->{session}->html_phrase( "Plugin/InputForm/Component/Upload:not_youtube_url" ) );
+		return;
+	}
 	
 	#plan is for a file that contains a list of urls, mime type "text/uri-list"
 	my ($fh, $filepath) = File::Temp::tempfile();
