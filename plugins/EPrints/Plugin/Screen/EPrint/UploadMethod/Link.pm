@@ -51,11 +51,20 @@ sub action_add_format
 		#youtube short, convert to normal youtube video
 		$url = "https://www.youtube.com/watch?v=$2";
 		$valid_url = 1;
-	}
+	}elsif( $url =~ m{^(https?)://www\.kaltura\.com/tiny/([^;&]+)}){
+        # Kultura redirect to embedded player, need to find the endpoint
+        # not sure there's a way to do this safely? Can use curl to find the endpoint with curl -Ls -o /dev/null -w %{url_effective} [url here]
+        # but I don't fancy running a system command from user input
+        $processor->add_message( "error", $self->{session}->html_phrase( "Plugin/InputForm/Component/Upload:expand_kaltura_tiny" ) );
+		return;
+    }elsif( $url = m{^(https?)://www\.kaltura\.com/index\.php/extwidget/preview/partner_id/([^;&]+)/uiconf_id/([^;&]+)/entry_id/0_smrbmrf7/embed/dynamic}){
+        $url = "https://www.kaltura.com/index.php/extwidget/preview/partner_id/$2/uiconf_id/$3/entry_id/0_smrbmrf7/embed/dynamic";
+        $valid_url = 1;
+    }
 
 	if( !$valid_url )
 	{
-		$processor->add_message( "error", $self->{session}->html_phrase( "Plugin/InputForm/Component/Upload:not_youtube_url" ) );
+		$processor->add_message( "error", $self->{session}->html_phrase( "Plugin/InputForm/Component/Upload:not_valid_url" ) );
 		return;
 	}
 	

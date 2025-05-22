@@ -6,6 +6,7 @@
 <epp:phrase id="Plugin/Screen/EPrint/UploadMethod/Link:title">Link to YouTube</epp:phrase>
 <epp:phrase id="Plugin/InputForm/Component/Upload:add_link">Add</epp:phrase>
 <epp:phrase id="Plugin/Screen/EPrint/UploadMethod/Link:help">URL of YouTube video without playlist. Example: https://www.youtube.com/watch?v=[id_of_video_here]</epp:phrase>
-<epp:phrase id="Plugin/InputForm/Component/Upload:not_youtube_url">Sorry, not a valid YouTube URL</epp:phrase>
+<epp:phrase id="Plugin/InputForm/Component/Upload:not_valid_url">Sorry, not a valid YouTube or Kaltura URL</epp:phrase>
+<epp:phrase id="Plugin/InputForm/Component/Upload:expand_kaltura_tiny">Sorry, tiny Kaltura URLs are not supported. Please find the full version of the URL and use that.</epp:phrase>
 
 </epp:phrases>
